@@ -16,11 +16,13 @@ create index if not exists hero_slides_active_order_idx
 
 alter table public.hero_slides enable row level security;
 
+drop policy if exists "Public can read active hero slides" on public.hero_slides;
 create policy "Public can read active hero slides"
   on public.hero_slides for select
   to anon, authenticated
   using (is_active = true);
 
+drop policy if exists "Authenticated users can manage hero slides" on public.hero_slides;
 create policy "Authenticated users can manage hero slides"
   on public.hero_slides for all
   to authenticated
@@ -39,22 +41,26 @@ insert into storage.buckets (id, name, public)
 values ('hero-slides', 'hero-slides', true)
 on conflict (id) do update set public = true;
 
+drop policy if exists "Public can view hero slide images" on storage.objects;
 create policy "Public can view hero slide images"
   on storage.objects for select
   to anon, authenticated
   using (bucket_id = 'hero-slides');
 
+drop policy if exists "Authenticated users can upload hero slide images" on storage.objects;
 create policy "Authenticated users can upload hero slide images"
   on storage.objects for insert
   to authenticated
   with check (bucket_id = 'hero-slides');
 
+drop policy if exists "Authenticated users can update hero slide images" on storage.objects;
 create policy "Authenticated users can update hero slide images"
   on storage.objects for update
   to authenticated
   using (bucket_id = 'hero-slides')
   with check (bucket_id = 'hero-slides');
 
+drop policy if exists "Authenticated users can delete hero slide images" on storage.objects;
 create policy "Authenticated users can delete hero slide images"
   on storage.objects for delete
   to authenticated

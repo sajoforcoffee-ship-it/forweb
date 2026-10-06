@@ -1,4 +1,15 @@
 import { useMemo, useState } from "react";
+
+type SliderRow = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  image_url: string;
+  mobile_image_url: string | null;
+  link_url: string;
+  sort_order: number;
+  is_active: boolean;
+};
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Plus, Trash2, Upload } from "lucide-react";
@@ -40,10 +51,10 @@ function IcerikYonetimi() {
   const sliderKaydetMut = useMutation({ mutationFn: sliderKaydet, onSuccess: yenile });
   const sliderSilMut = useMutation({ mutationFn: sliderSil, onSuccess: yenile });
 
-  const kategoriler = data?.kategoriler ?? [];
-  const makaleler = data?.makaleler ?? [];
-  const qrKodlari = data?.qrKodlari ?? [];
-  const sliders = data?.sliders ?? [];
+  const kategoriler = useMemo(() => data?.kategoriler ?? [], [data?.kategoriler]);
+  const makaleler = useMemo(() => data?.makaleler ?? [], [data?.makaleler]);
+  const qrKodlari = useMemo(() => data?.qrKodlari ?? [], [data?.qrKodlari]);
+  const sliders = useMemo(() => (data?.sliders ?? []) as SliderRow[], [data?.sliders]);
 
   const seciliKategori = useMemo(
     () => kategoriler.find((k) => k.id === secili),
@@ -51,7 +62,7 @@ function IcerikYonetimi() {
   );
   const seciliMakale = useMemo(() => makaleler.find((m) => m.id === secili), [makaleler, secili]);
   const seciliQr = useMemo(() => qrKodlari.find((q) => q.id === secili), [qrKodlari, secili]);
-  const seciliSlider = useMemo(() => sliders.find((s: any) => s.id === secili), [sliders, secili]);
+  const seciliSlider = useMemo(() => sliders.find((s) => s.id === secili), [sliders, secili]);
 
   return (
     <main className="admin-page mx-auto max-w-7xl px-6 py-14">
@@ -124,7 +135,7 @@ function IcerikYonetimi() {
                 </li>
               ))}
             {sekme === "slider" &&
-              sliders.map((s: any) => (
+              sliders.map((s) => (
                 <li key={s.id}>
                   <button
                     onClick={() => setSecili(s.id)}

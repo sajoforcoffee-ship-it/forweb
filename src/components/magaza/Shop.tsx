@@ -10,7 +10,14 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import ProductCard from "./ProductCard";
-import { URUNLER, KATEGORILER, fiyatBicimle, enDusukFiyat, type KategoriSlug, type Urun } from "@/data/urunler";
+import {
+  URUNLER,
+  KATEGORILER,
+  fiyatBicimle,
+  enDusukFiyat,
+  type KategoriSlug,
+  type Urun,
+} from "@/data/urunler";
 import { useCart } from "@/context/CartContext";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -80,7 +87,7 @@ const Shop = () => {
   const activeCategoryName =
     category === "tümü"
       ? "Tüm ürünler"
-      : KATEGORILER.find((item) => item.slug === category)?.ad ?? "Tüm ürünler";
+      : (KATEGORILER.find((item) => item.slug === category)?.ad ?? "Tüm ürünler");
 
   return (
     <main
@@ -140,11 +147,7 @@ const Shop = () => {
       </div>
       <section className="mobile-shop-categories" aria-label="Mağaza kategorileri">
         {mobilKategoriler.map((item) => (
-          <button
-            key={item.slug}
-            type="button"
-            onClick={() => handleCategoryChange(item.slug)}
-          >
+          <button key={item.slug} type="button" onClick={() => handleCategoryChange(item.slug)}>
             <span className="mobile-shop-category-name">{item.ad.split(" ")[0]}</span>
             <strong>{item.ad}</strong>
           </button>

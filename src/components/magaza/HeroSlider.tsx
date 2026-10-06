@@ -11,6 +11,14 @@ type HeroSlide = {
   href: string;
 };
 
+type HeroSlideRow = {
+  image_url: string;
+  mobile_image_url: string | null;
+  eyebrow: string;
+  title: string;
+  link_url: string;
+};
+
 const slides: HeroSlide[] = [
   {
     image: "/images/slider-coffee-1.png",
@@ -41,13 +49,29 @@ export default function HeroSlider() {
   const { data: remoteSlides } = useQuery({
     queryKey: ["hero-slides-public"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await (
+        supabase as unknown as {
+          from: (table: string) => {
+            select: (columns: string) => {
+              eq: (
+                column: string,
+                value: boolean,
+              ) => {
+                order: (
+                  column: string,
+                  options: { ascending: boolean },
+                ) => Promise<{ data: HeroSlideRow[] | null; error: Error | null }>;
+              };
+            };
+          };
+        }
+      )
         .from("hero_slides")
         .select("id, eyebrow, title, image_url, mobile_image_url, link_url")
         .eq("is_active", true)
         .order("sort_order", { ascending: true });
       if (error) throw error;
-      return (data ?? []).map((item: any) => ({
+      return (data ?? []).map((item) => ({
         image: item.image_url,
         mobileImage: item.mobile_image_url || item.image_url,
         eyebrow: item.eyebrow,

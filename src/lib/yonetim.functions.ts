@@ -73,6 +73,7 @@ export const yonetimVerisi = createServerFn({ method: "GET" })
         context.supabase.from("categories").select("*").order("sira"),
         context.supabase.from("articles").select("*").order("sira"),
         context.supabase.from("qr_codes").select("*").order("kod"),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (context.supabase as any).from("hero_slides").select("*").order("sort_order"),
       ]);
 
@@ -248,8 +249,10 @@ export const sliderKaydet = createServerFn({ method: "POST" })
       updated_at: new Date().toISOString(),
     };
     const result = data.id
-      ? await (context.supabase as any).from("hero_slides").update(row).eq("id", data.id)
-      : await (context.supabase as any).from("hero_slides").insert(row);
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (context.supabase as any).from("hero_slides").update(row).eq("id", data.id)
+      : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (context.supabase as any).from("hero_slides").insert(row);
     if (result.error) throw new Error(result.error.message);
     return { ok: true };
   });
@@ -258,6 +261,7 @@ export const sliderSil = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((id: unknown) => idSchema.parse(id))
   .handler(async ({ data: id, context }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (context.supabase as any).from("hero_slides").delete().eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
